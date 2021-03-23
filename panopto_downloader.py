@@ -68,8 +68,10 @@ for x in range(100000): # fill the queue with all possible numbers.
 
 for worker in workers:  # wait until every worker thread is finished
     worker.join()
-
-files = [f"./temp/{f}" for f in os.listdir("./temp/") if f.endswith(".ts")] # list all temp files
+    
+files = [int(f.replace(".ts", "")) for f in os.listdir("./temp/") if f.endswith(".ts")] # list all temp files and store the file numbers as integer
+files.sort() # sort the list to ensure the videos parts are in the correct order
+files = [f"./temp/{f:05}.ts" for f in files] # format the file numbers --> e.g. "./temp/00001.ts"
 
 ffmpeg_string = f'ffmpeg -i \"concat:{"|".join(files)}\" -c copy -bsf:a aac_adtstoasc {final_filename}' # create the ffmpeg string to concatinate the parts
 
