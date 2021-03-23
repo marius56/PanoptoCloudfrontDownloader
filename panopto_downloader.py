@@ -24,6 +24,7 @@ class DownloadWorker(Thread):
                     break
  
             try:
+                # print(f"Downlading file '{ctr:05}.ts'")
                 urllib.request.urlretrieve(f"{url}{ctr:05}.ts", f"temp/{ctr:05}.ts")
                 failed_ctr = 0
                 print(f"File '{ctr:05}.ts' downloaded")
@@ -32,10 +33,15 @@ class DownloadWorker(Thread):
                 if e.code == 403: # downloaded every video
                     self.queue.queue.clear() # clear the queue
                     break
-
+                else:
+                    failed_ctr += 1
+                    print(f"Failed to download the file (Attempt {failed_ctr})")
+                    print(e)
+                    pass # try to download the file again
+                    
             except Exception as e:
                 failed_ctr += 1
-                print(f"Failed to download (Attempt {failed_ctr})")
+                print(f"Failed to download the file (Attempt {failed_ctr})")
                 print(e)
                 pass # try to download the file again
 
