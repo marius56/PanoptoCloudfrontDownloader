@@ -23,7 +23,7 @@ class DownloadWorker(Thread):
                     ctr = self.queue.get(timeout=3) # if there is no new element to download for 3 seconds
                 except: # exit the thread
                     break
- 
+
             try:
                 # print(f"[{self.thread_name}] Downloading file '{ctr:05}.ts'") # activate this line if you want to have a message when a download is started
                 response = requests.get(f"{url}{ctr:05}.ts", timeout=10, stream=True) # stream the download --> chunk can be written while it is still downloading (usefull for big files)
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     print(f"Starting to download the video parts (with {amount_threads} threads)...")
     queue = Queue()
-
+    
     workers = []
     for x in range(amount_threads):
         workers.append(DownloadWorker(queue, f"Thread-{x+1:02}"))
@@ -82,17 +82,16 @@ if __name__ == "__main__":
 
     for worker in workers:  # wait until every worker thread is finished
         worker.join()
-
+    
+    print(f"\nDownload finished")
     files = [int(f.replace(".ts", "")) for f in os.listdir("./temp/") if f.endswith(".ts")] # list all temp files and store the file numbers as integer
     files.sort() # sort the list to ensure the videos parts are in the correct order
     files = [f"./temp/{f:05}.ts" for f in files] # format the file numbers --> e.g. "./temp/00001.ts"
 
-    ffmpeg_string = f'ffmpeg -i \"concat:{"|".join(files)}\" -c copy -bsf:a aac_adtstoasc {final_filename}'
-    print(f"Ffmpeg: {ffmpeg_string}")
-
+    ffmpeg_string = f'ffmpeg -hide_banner -loglevel panic -nostats -i \"concat:{"|".join(files)}\" -c copy -bsf:a aac_adtstoasc {final_filename}'
+    
     print("Concatinating files via ffmpeg")
     os.system(ffmpeg_string)
-
 
     print("Deleting temp files...")
     files = [f for f in os.listdir("./temp/") if f.endswith(".ts")]
