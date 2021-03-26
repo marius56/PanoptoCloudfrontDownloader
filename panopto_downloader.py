@@ -100,9 +100,7 @@ if __name__ == "__main__":
     if not args.outputfilename.endswith(".ts"):
         print("The filename must have the extension .ts")
         sys.exit(1)
-
-    #url = "https://d2hpwsdp0ihr0w.cloudfront.net/sessions/c3bf716e-2946-4703-8dfe-abe800ed2375/518c4843-7649-4537-a5f6-abe800ed237e-b3eaf05b-86fd-4a81-95c3-abe80101c4d2.hls/600000/00038.ts"
-
+        
     if os.path.isdir("temp"):
         print("Temp directory found. Deleting old files...")
         files = [f for f in os.listdir("./temp/") if f.endswith(".ts")]
